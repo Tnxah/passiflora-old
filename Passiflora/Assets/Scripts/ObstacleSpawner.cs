@@ -113,7 +113,6 @@ public class ObstacleSpawner : MonoBehaviour
             var rand = rnd.Next(100);
             if (rand <= spawnChance[i])
             {
-                print(rand + " " + i);
                 return obstaclesPool[i];
             }
         }
