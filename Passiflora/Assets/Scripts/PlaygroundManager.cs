@@ -16,6 +16,9 @@ public class PlaygroundManager : MonoBehaviour
     public float speed;
     public int score;
 
+    [SerializeField]
+    private static int countToAd;
+
     public bool resurrected;
 
     public delegate void OnDeathCallback();
@@ -27,25 +30,27 @@ public class PlaygroundManager : MonoBehaviour
         {
             instance = this;
         }
-
-        
     }
 
     private void Start()
     {
-        obstacleSpawner = GameObject.FindGameObjectWithTag("ObstacleSpawner").GetComponent<ObstacleSpawner>();
+        print("TEST Start in PlayerManage");
         fc = GetComponent<FingerControl>();
         Initialize();
+        AdsManager.instance.SetReward(Resurrect);
         StartCoroutine(StartGame());
+        print("TEST Last line in Start in PlayerManage");
     }
 
     void Initialize()
     {
         speed = Settings.startSpeed;
+        countToAd = countToAd <= 0 ? Settings.adsCounter : countToAd;
     }
 
     IEnumerator StartGame()
     {
+        print("TEST StartGame in PlayerManage");
         Time.timeScale = 1;
 
 #if UNITY_EDITOR
@@ -54,11 +59,15 @@ public class PlaygroundManager : MonoBehaviour
         yield return new WaitUntil(()=> FingerControl.instance.BouthTouched());
 #endif
         GameManager.instance.ChangeState(GameManager.gameScene, GameState.Play);
-
+        print("TEST 1");
         PlaygroundUIManager.instance.OnPlay();
+        print("TEST 2");
         obstacleSpawner.Launch();
-        StartCoroutine(ScoreIncreaser());
+        print("TEST 3");
         StartCoroutine(SpeedIncreaser());
+        print("TEST 4");
+        StartCoroutine(ScoreIncreaser());
+        print("TEST 5");
     }
 
     IEnumerator ScoreIncreaser()
@@ -74,15 +83,21 @@ public class PlaygroundManager : MonoBehaviour
 
     IEnumerator SpeedIncreaser()
     {
+        print("TEST a");
         while (true)
         {
+            print($"TEST b {speed} {Settings.maxSpeed}");
             while (speed < Settings.maxSpeed)
             {
+                print($"TEST c {speed} {Settings.maxSpeed}");
                 yield return new WaitForSeconds(10);
+                print("TEST d");
                 speed++;
+                print("TEST e");
             }
-            
+            print("TEST f");
         }
+
     }
     public void OnDeath()
     {
@@ -94,6 +109,13 @@ public class PlaygroundManager : MonoBehaviour
 
         GooglePlayServicesManager.instance.SaveScore(score);
         GooglePlayServicesManager.instance.DistanceAchive(score);
+
+        countToAd--;
+        if (countToAd == 0)
+        {
+            AdsManager.instance.ShowNonRewardedAd();
+            countToAd = Settings.adsCounter;
+        }
     }
 
     public void Resurrect()
@@ -105,9 +127,7 @@ public class PlaygroundManager : MonoBehaviour
 
         FingerControl.instance.StopLights();
 
-        PlaygroundUIManager.instance.OnResurrect();
-
-        
+        PlaygroundUIManager.instance.OnResurrect();        
     }
 
     public void Restart()
@@ -119,6 +139,7 @@ public class PlaygroundManager : MonoBehaviour
     }
     public void PauseGame()
     {
+        print("PauseGame Trigger");
         Time.timeScale = 0;
         GameManager.instance.ChangeState(GameManager.gameScene, GameState.Pause);
     }
@@ -126,5 +147,15 @@ public class PlaygroundManager : MonoBehaviour
     public void ResumeGame()
     {
         Time.timeScale = 1;
+    }
+
+    private void OnEnable()
+    {
+        AdsManager.instance.ToggleBanner(true);
+    }
+
+    private void OnDisable()
+    {
+        AdsManager.instance.ToggleBanner(false);
     }
 }

@@ -45,7 +45,7 @@ public class FingerControl : MonoBehaviour
                 if (first)
                 {
                     Vector2 direction = (touchPosition - first.transform.position).normalized;
-                    first.GetComponent<Rigidbody2D>().velocity = direction * 15000f * Time.fixedDeltaTime;
+                    first.GetComponent<Rigidbody2D>().linearVelocity = direction * 15000f * Time.fixedDeltaTime;
                 }
             }
             if (touch.fingerId == 1)
@@ -57,7 +57,7 @@ public class FingerControl : MonoBehaviour
                 if (second)
                 {
                     Vector2 direction = (touchPosition - second.transform.position).normalized;
-                    second.GetComponent<Rigidbody2D>().velocity = direction * 15000f * Time.fixedDeltaTime;
+                    second.GetComponent<Rigidbody2D>().linearVelocity = direction * 15000f * Time.fixedDeltaTime;
                 }
             }
         }
@@ -71,12 +71,12 @@ public class FingerControl : MonoBehaviour
         {
             if (touch.fingerId == 0 && first)
             {
-                first.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                first.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
                 first = null;
             }
             if (touch.fingerId == 1 && second)
             {
-                second.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                second.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
                 second = null;
             }
         }
@@ -86,8 +86,8 @@ public class FingerControl : MonoBehaviour
     {
         var lights = GameObject.FindGameObjectsWithTag("Player");
 
-            lights[0].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            lights[1].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            lights[0].GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+            lights[1].GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
  
     }
 

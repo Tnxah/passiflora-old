@@ -5,209 +5,130 @@ using UnityEngine.Advertisements;
 
 public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-#if UNITY_ANDROID
-    string gameID = "4473937";
-    string interstitialId = "Interstitial_Android";
-    string rewardedID = "Rewarded_Android";
-    string bannerID = "Banner_Android";
-#else
-    string gameId = "4473936";
-    string interstitialId = "Interstitial_iOS";
-    string rewardedId = "Rewarded_iOS";
-    string bannerId = "Banner_iOS";
-#endif 
+    public string GAME_ID = "4473937";
 
-    //public TextMeshProUGUI debug;
-    //[HideInInspector]
-    public int numberToAd;
-    //[SerializeField]
-    public static int countToAd = 4;
+    private const string BANNER_PLACEMENT = "Banner_Android";
+    private const string VIDEO_PLACEMENT = "Interstitial_Android";
+    private const string REWARDED_VIDEO_PLACEMENT = "Rewarded_Android";
+
+    [SerializeField] private BannerPosition bannerPosition = BannerPosition.BOTTOM_CENTER;
+
+    private bool testMode = false;
+    private bool showBanner = false;
+
+    public TextMeshProUGUI debug;
+
     Action onRewardedAdSuccess;
     public static AdsManager instance;
 
-    private bool rewardedReady;
-
     private void Awake()
-    {
-        print("start Initialising");
-        Advertisement.Initialize(gameID, false, this);
-    }
-    void Start()
     {
         if (instance == null)
         {
             instance = this;
         }
-        PlaygroundManager.instance.onDeathCallback += OnDeathAds;
-        LoadBanner();
-        LoadInterstitial();
-        LoadRewarded();
-        ShowBanner();
-        numberToAd = Settings.adsCounter;
+
+        Initialize();
     }
 
-    private void LoadInterstitial()
+    public void Initialize()
     {
-        Advertisement.Load(interstitialId, this);
-    }
-
-    private void LoadRewarded()
-    {
-        Advertisement.Load(rewardedID, this);
-    }
-
-    public void ShowInterstitial()
-    {
-        Advertisement.Show(interstitialId, this);
-    }
-
-    public void ShowRewarded()
-    {
-        Advertisement.Show(rewardedID, this);
-    }
-
-    public bool RewardedIsReady()
-    {
-        return rewardedReady;
-    }
-
-    public void ShowBanner()
-    {
-       // debug.text += "show banner";
-
-        
-        Advertisement.Banner.Show(bannerID);
-    }
-
-
-    public void HideBanner()
-    {
-        Advertisement.Banner.Hide(false);
-    }
-
-    public void LoadBanner()
-    {
-        //debug.text += "Banner start loading";
-        print("Banner start loading");
-        Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);
-        Advertisement.Banner.Load(bannerID);
-        
-    }
-
-    void OnBannerLoaded()
-    {
-        Debug.Log("Banner loaded");
-        //debug.text += "Banner loaded";
-        ShowBanner();
-
-    }
-
-
-    void OnBannerError(string message)
-    {
-        Debug.Log($"Banner Error: {message}");
-        //debug.text += $"Banner Error: {message}";
-
-
-    }
-
-    public void OnDeathAds()
-    {
-        countToAd--;
-        if (countToAd <= 0)
+        if (Advertisement.isSupported)
         {
-            ShowInterstitial();
-            countToAd = numberToAd;
+            print(Application.platform + " supported by Advertisement");
+        }
+        Advertisement.Initialize(GAME_ID, testMode, this);
+    }
+
+    public void SetReward(Action reward)
+    {
+        onRewardedAdSuccess = reward;
+    }
+
+    public void ToggleBanner(bool toggle)
+    {
+        if (showBanner == toggle)
+            return;
+
+        showBanner = toggle;
+
+        if (showBanner)
+        {
+            Advertisement.Banner.SetPosition(bannerPosition);
+            Advertisement.Banner.Show(BANNER_PLACEMENT);
+        }
+        else
+        {
+            Advertisement.Banner.Hide(false);
         }
     }
 
-
-    public void OnUnityAdsReady(string placementId)
+    public void LoadRewardedAd()
     {
-        print("ADS ARE READY");
-
+        Advertisement.Load(REWARDED_VIDEO_PLACEMENT, this);
     }
 
-    public void OnUnityAdsDidError(string message)
+    public void ShowRewardedAd()
     {
-        print("ERROR " + message);
-        //debug.text += ("ERROR " + message);
-
+        LoadRewardedAd();
+        Advertisement.Show(REWARDED_VIDEO_PLACEMENT, this);
     }
 
-    public void OnUnityAdsDidStart(string placementId)
+    public void LoadNonRewardedAd()
     {
-        print("VIDEO STARTED");
-
+        Advertisement.Load(VIDEO_PLACEMENT, this);
     }
 
-    public void OnUnityAdsDidFinish(string placementId, ShowResult showResult)
+    public void ShowNonRewardedAd()
     {
-        if (placementId == rewardedID && showResult == ShowResult.Finished)
-        {
-            print("REWARD");
-            //***********
-            // GIVE REWARD TO THE PLAYER
-            onRewardedAdSuccess.Invoke();
-            //***********
-        }
+        LoadNonRewardedAd();
+        Advertisement.Show(VIDEO_PLACEMENT, this);
     }
 
+    #region Interface Implementations
     public void OnInitializationComplete()
     {
-        Debug.Log("Unity Ads initialization complete.");
-        //debug.text += "Kek";
-        //debug.text += "Unity Ads initialization complete.";
-        Debug.Log("======================================");
+        Debug.Log("Init Success");
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {
-        Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
-        //debug.text += $"Unity Ads Initialization Failed: {error.ToString()} - {message}";
-    }
-
-    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void OnUnityAdsShowStart(string placementId)
-    {
-        print(placementId + " starded showing");
-    }
-
-    public void OnUnityAdsShowClick(string placementId)
-    {
-        print("plus babki");
-    }
-
-    public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
-    {
-        if (placementId.Equals(rewardedID) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
-        {
-            Debug.Log("Unity Ads Rewarded Ad Completed");
-            PlaygroundManager.instance.Resurrect();
-
-            rewardedReady = false;
-            // Load another ad:
-            Advertisement.Load(rewardedID, this);
-        }
+        Debug.Log($"Init Failed: [{error}]: {message}");
     }
 
     public void OnUnityAdsAdLoaded(string placementId)
     {
-        if (placementId.Equals(rewardedID))
-        {
-            print("Rewarded loaded na pewno");
-            rewardedReady = true;
-        }
-
-        print(placementId + " loaded");
+        Debug.Log($"Load Success: {placementId}");
     }
 
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
     {
-        throw new NotImplementedException();
+        Debug.Log($"Load Failed: [{error}:{placementId}] {message}");
     }
+
+    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
+    {
+        Debug.Log($"OnUnityAdsShowFailure: [{error}]: {message}");
+    }
+
+    public void OnUnityAdsShowStart(string placementId)
+    {
+        Debug.Log($"OnUnityAdsShowStart: {placementId}");
+    }
+
+    public void OnUnityAdsShowClick(string placementId)
+    {
+        Debug.Log($"OnUnityAdsShowClick: {placementId}");
+    }
+
+    public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
+    {
+        Debug.Log($"OnUnityAdsShowComplete: [{showCompletionState}]: {placementId}");
+
+        if (placementId == REWARDED_VIDEO_PLACEMENT && showCompletionState == UnityAdsShowCompletionState.COMPLETED)
+        {
+            onRewardedAdSuccess?.Invoke();
+        }
+    }
+    #endregion
 }

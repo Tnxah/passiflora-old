@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
 
         if (firstBoot)
         {
+            print("FirstBoot Trigger");
             FirstBoot();
 
             firstBoot = false;
@@ -52,6 +53,9 @@ public class GameManager : MonoBehaviour
     {
         gameScene = newScene;
         gameState = newState;
+
+        if (gameState == GameState.Play)
+            Time.timeScale = 1;
 
         print($"OnChangeState {gameScene} " +
             $"{gameState}");

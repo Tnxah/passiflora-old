@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Advertisements;
 using UnityEngine.UI;
 
 public class PlaygroundUIManager : MonoBehaviour
@@ -31,6 +32,11 @@ public class PlaygroundUIManager : MonoBehaviour
         leaderboard.gameObject.SetActive(Settings.isConnectedToPlayServices);
     }
 
+    private void Start()
+    {
+        resurrectButton.onClick.AddListener(AdsManager.instance.ShowRewardedAd);
+    }
+
     public void OnRestart()
     {
         deathPanel.SetActive(false);
@@ -40,7 +46,7 @@ public class PlaygroundUIManager : MonoBehaviour
     {
         deathPanel.SetActive(true);
 
-        if (!PlaygroundManager.instance.resurrected && AdsManager.instance.RewardedIsReady())
+        if (!PlaygroundManager.instance.resurrected)
             resurrectButton.gameObject.SetActive(true);
     }
 

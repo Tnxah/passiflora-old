@@ -1,0 +1,5 @@
+# ninja log v5
+1	102	7660205611145407	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	3c5b60ab86825600
+102	177	7660205611975076	D:/Unity Projects/passiflora-old/Passiflora/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2th385e2/obj/armeabi-v7a/libswappywrapper.so	966893c830b46f8
+1	83	7660291300356475	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	3c5b60ab86825600
+83	149	7660291301065513	D:/Unity Projects/passiflora-old/Passiflora/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2th385e2/obj/armeabi-v7a/libswappywrapper.so	966893c830b46f8

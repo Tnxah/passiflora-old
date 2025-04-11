@@ -2,6 +2,7 @@
 using Unity.RemoteConfig;
 using System.Threading;
 using System;
+using Unity.Services.RemoteConfig;
 
 public class RemoteConfig : MonoBehaviour
 {
@@ -33,12 +34,12 @@ public class RemoteConfig : MonoBehaviour
             instance = this;
         }
 
-        ConfigManager.FetchConfigs<userAttributes, appAttributes>(new userAttributes(), new appAttributes());
+        RemoteConfigService.Instance.FetchConfigs(new userAttributes(), new appAttributes());
     }
 
     public void Start()
     {
-        ConfigManager.FetchCompleted += ApplyRemoteSettings;
+        RemoteConfigService.Instance.FetchCompleted += ApplyRemoteSettings;
     }
 
     void ApplyRemoteSettings(ConfigResponse configResponse)
@@ -51,15 +52,15 @@ public class RemoteConfig : MonoBehaviour
                 break;
             case ConfigOrigin.Cached:
                 Debug.Log("No settings loaded this session; using cached values from a previous session.");
-                startSpeed = ConfigManager.appConfig.GetFloat("StartSpeed");
-                maxSpeed = ConfigManager.appConfig.GetFloat("MaxSpeed");
-                adsCounter = ConfigManager.appConfig.GetInt("AdsCounter");
+                startSpeed = RemoteConfigService.Instance.appConfig.GetFloat("StartSpeed");
+                maxSpeed = RemoteConfigService.Instance.appConfig.GetFloat("MaxSpeed");
+                adsCounter = RemoteConfigService.Instance.appConfig.GetInt("AdsCounter");
                 break;
             case ConfigOrigin.Remote:
                 Debug.Log("New settings loaded this session; update values accordingly.");
-                startSpeed = ConfigManager.appConfig.GetFloat("StartSpeed");
-                maxSpeed = ConfigManager.appConfig.GetFloat("MaxSpeed");
-                adsCounter = ConfigManager.appConfig.GetInt("AdsCounter");
+                startSpeed = RemoteConfigService.Instance.appConfig.GetFloat("StartSpeed");
+                maxSpeed = RemoteConfigService.Instance.appConfig.GetFloat("MaxSpeed");
+                adsCounter = RemoteConfigService.Instance.appConfig.GetInt("AdsCounter");
                 newData = true;
                 break;
         }

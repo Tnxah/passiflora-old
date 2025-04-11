@@ -27,10 +27,10 @@ public class Follower : Obstacle, IActivatable
             return;
 
 
-        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
 
         Vector2 direction = (target.position - transform.position).normalized;
-        GetComponent<Rigidbody2D>().velocity = direction * speed * Time.fixedDeltaTime;
+        GetComponent<Rigidbody2D>().linearVelocity = direction * speed * Time.fixedDeltaTime;
 
         CheckDistance();
     }

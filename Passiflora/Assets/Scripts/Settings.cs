@@ -35,9 +35,9 @@ public class Settings
 
     public static void LoadRemoteConfig()
     {
-        startSpeed = RemoteConfig.instance.GetStartSpeed();
-        maxSpeed = RemoteConfig.instance.GetMaxSpeed();
-        adsCounter = RemoteConfig.instance.GetAdsCounter();
+        //startSpeed = RemoteConfig.instance.GetStartSpeed();
+        //maxSpeed = RemoteConfig.instance.GetMaxSpeed();
+        //adsCounter = RemoteConfig.instance.GetAdsCounter();
 
         onRemoteConfigCallback?.Invoke();
         isRemoteConfigLoaded = true;
